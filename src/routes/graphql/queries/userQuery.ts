@@ -13,7 +13,7 @@ export const usersQuery = {
     }),
 };
 export const userQuery = {
-  type: new GraphQLNonNull(UserType),
+  type: UserType,
   args: {
     id: {
       type: new GraphQLNonNull(UUIDType),

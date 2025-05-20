@@ -7,7 +7,7 @@ export const postsQuery = {
   resolve: async (_, __, context) => await context.Post.findMany(),
 };
 export const postQuery = {
-  type: new GraphQLNonNull(PostType),
+  type: PostType,
   args: {
     id: {
       type: new GraphQLNonNull(UUIDType),
