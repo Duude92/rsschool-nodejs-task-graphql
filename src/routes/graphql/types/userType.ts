@@ -11,7 +11,7 @@ import { PostType } from './postType.js';
 
 export const UserType = new GraphQLObjectType({
   name: 'UserType',
-  fields: () => ({
+  fields: (): any => ({
     id: {
       type: new GraphQLNonNull(UUIDType),
     },
@@ -35,9 +35,29 @@ export const UserType = new GraphQLObjectType({
     },
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
+      resolve: async (user: { id: string }, b, prisma) =>
+        await prisma.User.findMany({
+          where: {
+            subscribedToUser: {
+              some: {
+                subscriberId: user.id,
+              },
+            },
+          },
+        }),
     },
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
+      resolve: async (user: { id: string }, b, prisma) =>
+        await prisma.User.findMany({
+          where: {
+            userSubscribedTo: {
+              some: {
+                authorId: user.id,
+              },
+            },
+          },
+        }),
     },
   }),
 });
