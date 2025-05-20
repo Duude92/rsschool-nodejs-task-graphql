@@ -1,11 +1,11 @@
 import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { MemberType } from '../types/memberType.js';
 
-export const memberTypesField = {
+export const memberTypesQuery = {
   type: new GraphQLNonNull(new GraphQLList(MemberType)),
   resolve: async (_, __, prisma) => await prisma.MemberType.findMany(),
 };
-export const memberTypeIdField = {
+export const memberTypeIdQuery = {
   type: new GraphQLNonNull(MemberType),
   args: {
     id: {
