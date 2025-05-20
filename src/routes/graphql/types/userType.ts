@@ -23,6 +23,11 @@ export const UserType = new GraphQLObjectType({
     },
     profile: {
       type: ProfileType,
+      resolve: async (user: { id: typeof UUIDType }, b, context) =>
+        await context.Profile.findUnique({
+          where: { userId: user.id },
+          include: { memberType: true },
+        }),
     },
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
