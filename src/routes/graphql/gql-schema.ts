@@ -4,6 +4,7 @@ import { profileIdQuery, profileQuery } from './queries/profileQuery.js';
 import { userQuery, usersQuery } from './queries/userQuery.js';
 import { postQuery, postsQuery } from './queries/postQuery.js';
 import { changeUser, createUser, deleteUser } from './mutations/userMutations.js';
+import { createProfile } from './mutations/profileMutations.js';
 
 export const rootSchema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -24,7 +25,8 @@ export const rootSchema = new GraphQLSchema({
     fields: {
       createUser: createUser,
       changeUser,
-      deleteUser
+      deleteUser,
+      createProfile,
     },
   }),
 });
