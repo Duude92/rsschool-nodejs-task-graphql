@@ -1,23 +1,20 @@
 import {
-  GraphQLEnumType,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql/type/index.js';
-import { GraphQLScalarType } from 'graphql';
-
 
 export const MemberType = new GraphQLObjectType({
   name: 'MemberType',
   fields: {
-    id: { type: GraphQLString },
+    id: { type: new GraphQLNonNull(GraphQLString) },
     discount: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
     },
     postsLimitPerMonth: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
   },
 });

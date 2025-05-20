@@ -4,7 +4,7 @@ import { UUID } from 'node:crypto';
 import { UUIDType } from '../types/uuid.js';
 
 export const profileQuery = {
-  type: new GraphQLNonNull(new GraphQLList(ProfileType)),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ProfileType))),
   resolve: async (_, __, prisma) =>
     await prisma.Profile.findMany({
       include: {
@@ -13,7 +13,7 @@ export const profileQuery = {
     }),
 };
 export const profileIdQuery = {
-  type: new GraphQLNonNull(ProfileType),
+  type: ProfileType,
   args: {
     id: {
       type: new GraphQLNonNull(UUIDType),

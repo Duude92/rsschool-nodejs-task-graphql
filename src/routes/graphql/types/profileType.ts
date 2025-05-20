@@ -10,9 +10,9 @@ import { MemberType } from './memberType.js';
 export const ProfileType = new GraphQLObjectType({
   name: 'ProfileType',
   fields: {
-    id: { type: UUIDType },
-    isMale: { type: GraphQLBoolean },
-    yearOfBirth: { type: GraphQLInt },
+    id: { type: new GraphQLNonNull(UUIDType) },
+    isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+    yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
     memberType: { type: new GraphQLNonNull(MemberType) },
   },
 });

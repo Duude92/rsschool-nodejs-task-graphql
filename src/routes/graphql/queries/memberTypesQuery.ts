@@ -2,14 +2,14 @@ import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql/type/index.j
 import { MemberType } from '../types/memberType.js';
 
 export const memberTypesQuery = {
-  type: new GraphQLNonNull(new GraphQLList(MemberType)),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MemberType))),
   resolve: async (_, __, prisma) => await prisma.MemberType.findMany(),
 };
 export const memberTypeIdQuery = {
-  type: new GraphQLNonNull(MemberType),
+  type: MemberType,
   args: {
     id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'MemberType identifier',
     },
   },
