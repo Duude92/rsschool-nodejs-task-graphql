@@ -5,12 +5,7 @@ import { UUIDType } from '../types/uuid.js';
 export const usersQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
   resolve: async (_, __, prisma) =>
-    await prisma.User.findMany({
-      include: {
-        // userSubscribedTo: true,
-        // subscribedToUser : true
-      },
-    }),
+    await prisma.User.findMany({}),
 };
 export const userQuery = {
   type: UserType,
