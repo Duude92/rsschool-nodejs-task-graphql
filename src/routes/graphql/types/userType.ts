@@ -11,7 +11,7 @@ import { PostType } from './postType.js';
 
 export const UserType = new GraphQLObjectType({
   name: 'UserType',
-  fields: {
+  fields: () => ({
     id: {
       type: new GraphQLNonNull(UUIDType),
     },
@@ -21,21 +21,17 @@ export const UserType = new GraphQLObjectType({
     balance: {
       type: new GraphQLNonNull(GraphQLFloat),
     },
-
     profile: {
       type: ProfileType,
     },
-
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType)))
     },
-
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
     },
-
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
     },
-  },
+  }),
 });
