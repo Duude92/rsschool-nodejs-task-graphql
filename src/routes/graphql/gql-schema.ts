@@ -5,7 +5,7 @@ import { userQuery, usersQuery } from './queries/userQuery.js';
 import { postQuery, postsQuery } from './queries/postQuery.js';
 import { changeUser, createUser, deleteUser } from './mutations/userMutations.js';
 import { changeProfile, createProfile } from './mutations/profileMutations.js';
-import { createPost } from './mutations/postMutations.js';
+import { changePost, createPost } from './mutations/postMutations.js';
 
 export const rootSchema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -29,7 +29,8 @@ export const rootSchema = new GraphQLSchema({
       deleteUser,
       createProfile,
       changeProfile,
-      createPost
+      createPost,
+      changePost,
     },
   }),
 });
