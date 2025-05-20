@@ -8,14 +8,14 @@ export const rootSchema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQuery',
     fields: {
-      memberTypesQuery,
-      memberTypeIdQuery,
-      profileQuery,
-      profileIdQuery,
-      usersQuery,
-      userQuery,
-      postsQuery,
-      postQuery,
+      memberTypes: memberTypesQuery,
+      memberType: memberTypeIdQuery,
+      profiles: profileQuery,
+      profile: profileIdQuery,
+      users: usersQuery,
+      user: userQuery,
+      posts: postsQuery,
+      post: postQuery,
     },
   }),
 });
