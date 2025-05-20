@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql/type/index.js';
 import { memberTypeIdQuery, memberTypesQuery } from './queries/memberTypesQuery.js';
-import { profileQuery } from './queries/profileQuery.js';
+import { profileIdQuery, profileQuery } from './queries/profileQuery.js';
 
 export const rootSchema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -9,6 +9,7 @@ export const rootSchema = new GraphQLSchema({
       memberTypesQuery,
       memberTypeIdQuery,
       profileQuery,
+      profileIdQuery
     },
   }),
 });
