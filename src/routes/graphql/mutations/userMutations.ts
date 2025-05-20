@@ -1,5 +1,5 @@
 import { ChangeUserInput, CreateUserInput, UserType } from '../types/userType.js';
-import { GraphQLNonNull } from 'graphql/type/index.js';
+import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { UUIDType } from '../types/uuid.js';
 
 export const createUser = {
@@ -20,4 +20,14 @@ export const changeUser = {
       where: { id: id },
       data: dto,
     }),
+};
+export const deleteUser = {
+  type: new GraphQLNonNull(GraphQLString),
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (a, { id }, context) => {
+    const result = await context.User.delete({ where: { id: id } });
+    return result;
+  },
 };
