@@ -20,5 +20,5 @@ export const profileIdQuery = {
     },
   },
   resolve: async (_, { id }: { id: UUID }, prisma) =>
-    prisma.Profile.findUnique({ where: { id: id }, include: { memberType: true } }),
+    await prisma.Profile.findUnique({ where: { id: id }, include: { memberType: true } }),
 };
