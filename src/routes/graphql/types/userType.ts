@@ -25,7 +25,7 @@ export const UserType = new GraphQLObjectType({
     profile: {
       type: ProfileType,
       resolve: async (user: { id: typeof UUIDType }, b, context) =>
-        await context.Profile.findUnique({
+        await context.prisma.Profile.findUnique({
           where: { userId: user.id },
           include: { memberType: true },
         }),
@@ -33,16 +33,15 @@ export const UserType = new GraphQLObjectType({
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
       resolve: async (user: { id: typeof UUIDType }, b, prisma) =>
-        await prisma.Post.findMany({
-          where: {
-            authorId: user.id,
-          },
-        }),
+      {
+        const result = await prisma.postLoader.load(user.id)
+        return result;
+      }
     },
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: { id: string }, b, prisma) =>
-        await prisma.User.findMany({
+        await prisma.prisma.User.findMany({
           where: {
             subscribedToUser: {
               some: {
@@ -55,7 +54,7 @@ export const UserType = new GraphQLObjectType({
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: { id: string }, b, prisma) =>
-        await prisma.User.findMany({
+        await prisma.prisma.User.findMany({
           where: {
             userSubscribedTo: {
               some: {
