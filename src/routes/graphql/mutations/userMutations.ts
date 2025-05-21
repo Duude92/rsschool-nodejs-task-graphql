@@ -62,7 +62,12 @@ export const unsubscribeFrom = {
   },
   resolve: async (a, { userId, authorId }, context) => {
     await context.SubscribersOnAuthors.delete({
-      where: { subscriberId: userId, authorId: authorId },
+      where: {
+        subscriberId_authorId: {
+          subscriberId: userId,
+          authorId: authorId,
+        },
+      },
     });
     return userId;
   },
