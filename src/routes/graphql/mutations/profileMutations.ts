@@ -3,7 +3,7 @@ import {
   CreateProfileInput,
   ProfileType,
 } from '../types/profileType.js';
-import { GraphQLNonNull } from 'graphql/type/index.js';
+import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { UUIDType } from '../types/uuid.js';
 
 export const createProfile = {
@@ -26,4 +26,11 @@ export const changeProfile = {
       },
       data: dto,
     }),
+};
+export const deleteProfile = {
+  type: new GraphQLNonNull(GraphQLString),
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (a, { id }, context) => (await context.Profile.delete({ where: { id: id } })).toString(),
 };
