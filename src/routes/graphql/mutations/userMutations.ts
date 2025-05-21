@@ -31,3 +31,25 @@ export const deleteUser = {
     return result;
   },
 };
+export const subscribeTo = {
+  type: new GraphQLNonNull(GraphQLString),
+  args: {
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    authorId: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (a, { userId, authorId }, context) => {
+    const user = await context.User.findUnique({
+      where: { id: userId },
+    });
+    const author = await context.User.findUnique({
+      where: { id: authorId },
+    })
+    await context.SubscribersOnAuthors.create({
+      data: {
+        subscriberId: user.id,
+        authorId: author.id,
+      },
+    });
+    return author.name;
+  },
+};
