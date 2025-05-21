@@ -1,4 +1,4 @@
-import { GraphQLNonNull } from 'graphql/type/index.js';
+import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { ChangePostInput, CreatePostInput, PostType } from '../types/postType.js';
 import { UUIDType } from '../types/uuid.js';
 
@@ -17,4 +17,12 @@ export const changePost = {
   },
   resolve: async (a, { id, dto }, context) =>
     context.Post.update({ where: { id: id }, data: dto }),
+};
+export const deletePost = {
+  type: new GraphQLNonNull(GraphQLString),
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (a, { id }, context) =>
+    (await context.Post.delete({ where: { id: id } })).toString(),
 };
