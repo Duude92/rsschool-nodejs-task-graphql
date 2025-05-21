@@ -25,18 +25,18 @@ export const UserType = new GraphQLObjectType({
     profile: {
       type: ProfileType,
       resolve: async (user: { id: typeof UUIDType }, b, context) =>
-        await context.prisma.Profile.findUnique({
-          where: { userId: user.id },
-          include: { memberType: true },
-        }),
+        // await context.prisma.Profile.findUnique({
+        //   where: { userId: user.id },
+        //   include: { memberType: true },
+        // }),
+        await context.loaders.profileLoader.load(user.id),
     },
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-      resolve: async (user: { id: typeof UUIDType }, b, prisma) =>
-      {
-        const result = await prisma.postLoader.load(user.id)
+      resolve: async (user: { id: typeof UUIDType }, b, prisma) => {
+        const result = await prisma.loaders.postLoader.load(user.id);
         return result;
-      }
+      },
     },
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
