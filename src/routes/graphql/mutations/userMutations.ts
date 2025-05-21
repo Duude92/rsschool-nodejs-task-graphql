@@ -43,7 +43,7 @@ export const subscribeTo = {
     });
     const author = await context.User.findUnique({
       where: { id: authorId },
-    })
+    });
     await context.SubscribersOnAuthors.create({
       data: {
         subscriberId: user.id,
@@ -51,5 +51,18 @@ export const subscribeTo = {
       },
     });
     return author.name;
+  },
+};
+export const unsubscribeFrom = {
+  type: new GraphQLNonNull(GraphQLString),
+  args: {
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    authorId: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (a, { userId, authorId }, context) => {
+    await context.SubscribersOnAuthors.delete({
+      where: { id: userId, authorId: authorId },
+    });
+    return userId;
   },
 };

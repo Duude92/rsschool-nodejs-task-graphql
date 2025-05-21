@@ -3,7 +3,7 @@ import { memberTypeIdQuery, memberTypesQuery } from './queries/memberTypesQuery.
 import { profileIdQuery, profileQuery } from './queries/profileQuery.js';
 import { userQuery, usersQuery } from './queries/userQuery.js';
 import { postQuery, postsQuery } from './queries/postQuery.js';
-import { changeUser, createUser, deleteUser, subscribeTo } from './mutations/userMutations.js';
+import { changeUser, createUser, deleteUser, subscribeTo, unsubscribeFrom } from './mutations/userMutations.js';
 import { changeProfile, createProfile, deleteProfile } from './mutations/profileMutations.js';
 import { changePost, createPost, deletePost } from './mutations/postMutations.js';
 
@@ -33,7 +33,8 @@ export const rootSchema = new GraphQLSchema({
       changePost,
       deletePost,
       deleteProfile,
-      subscribeTo
+      subscribeTo,
+      unsubscribeFrom
     },
   }),
 });
