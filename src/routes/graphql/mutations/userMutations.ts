@@ -1,6 +1,7 @@
 import { ChangeUserInput, CreateUserInput, UserType } from '../types/userType.js';
 import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { UUIDType } from '../types/uuid.js';
+import { context } from 'tap';
 
 export const createUser = {
   type: new GraphQLNonNull(UserType),
@@ -28,7 +29,7 @@ export const deleteUser = {
   },
   resolve: async (a, { id }, context) => {
     const result = await context.User.delete({ where: { id: id } });
-    return result;
+    return id;
   },
 };
 export const subscribeTo = {
