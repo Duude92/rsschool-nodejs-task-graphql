@@ -26,31 +26,45 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { query, variables } = req.body;
       const errors = validate(rootSchema, parse(query), [depthLimit(5)]);
       if (errors.length) return { errors };
-      // const postLoader = new DataLoader(async (keys) => {
-      //   const result = await prisma.post.findMany();
-      //   return keys.map((key) => result.filter((r) => r.authorId === key));
-      // });
+
       const postLoader = createLoader(
         await prisma.post.findMany(),
         (post: any, key) => post.authorId === key,
       );
       const profileLoader = createLoader(
-        await prisma.profile.findMany(),
-        (profile: any, key) => profile.userId === key,
+        await prisma.profile.findMany({
+          include: {
+            memberType: true,
+          },
+        }),
+        (profile: any, key) => profile.userId == key,
       );
-      // const profileLoader = new DataLoader(async (keys) => {
-      //   const result = await prisma.profile.findMany();
-      //   return keys.map((key) => result.filter((r) => r.userId === key));
-      // });
+      const memberLoader = createLoader(
+        await prisma.memberType.findMany(),
+        (member: any, key) => member.id === key,
+      );
+      const userLoader = createLoader(
+        await prisma.user.findMany({
+          include: {
+            profile: true,
+            userSubscribedTo: true,
+            subscribedToUser: true,
+          },
+        }),
+        (member: any, key) => member.id === key,
+      );
+
       return graphql({
         schema: rootSchema,
         source: query,
         variableValues: variables,
-        contextValue: { prisma, loaders: { postLoader, profileLoader } },
+        contextValue: {
+          prisma,
+          loaders: { postLoader, profileLoader, memberLoader, userLoader },
+        },
         // validationRules: [depthLimit(5)],
       });
     },
   });
 };
-
 export default plugin;
