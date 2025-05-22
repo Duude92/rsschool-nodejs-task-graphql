@@ -23,5 +23,12 @@ export const userQuery = {
     },
   },
   resolve: async (_, { id }: { id: typeof UUIDType }, context) =>
-    await context.prisma.User.findUnique({ where: { id: id } }),
+    await context.prisma.User.findUnique({
+      where: { id: id },
+      include: {
+        userSubscribedTo: true,
+        subscribedToUser: true,
+        profile: true,
+      },
+    }),
 };
