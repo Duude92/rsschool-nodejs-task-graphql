@@ -4,7 +4,16 @@ import { UUIDType } from '../types/uuid.js';
 
 export const usersQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-  resolve: async (_, __, prisma) => await prisma.User.findMany({}),
+  resolve: async (_, __, context) => {
+    const result = await context.prisma.User.findMany({
+      include: {
+        userSubscribedTo: true,
+        subscribedToUser: true,
+        profile: true,
+      },
+    });
+    return result;
+  },
 };
 export const userQuery = {
   type: UserType,
@@ -13,6 +22,6 @@ export const userQuery = {
       type: new GraphQLNonNull(UUIDType),
     },
   },
-  resolve: async (_, { id }: { id: typeof UUIDType }, prisma) =>
-    await prisma.User.findUnique({ where: { id: id } }),
+  resolve: async (_, { id }: { id: typeof UUIDType }, context) =>
+    await context.prisma.User.findUnique({ where: { id: id } }),
 };
