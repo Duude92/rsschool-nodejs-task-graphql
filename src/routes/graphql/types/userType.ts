@@ -25,44 +25,33 @@ export const UserType = new GraphQLObjectType({
     profile: {
       type: ProfileType,
       resolve: async (user: { id: typeof UUIDType }, b, context) =>
-        // await context.prisma.Profile.findUnique({
-        //   where: { userId: user.id },
-        //   include: { memberType: true },
-        // }),
-        await context.loaders.profileLoader.load(user.id),
+        (await context.loaders.profileLoader.load(user.id)).pop(),
     },
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-      resolve: async (user: { id: typeof UUIDType }, b, prisma) => {
-        const result = await prisma.loaders.postLoader.load(user.id);
+      resolve: async (user: { id: typeof UUIDType }, b, context) => {
+        const result = await context.loaders.postLoader.load(user.id);
         return result;
       },
     },
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-      resolve: async (user: { id: string }, b, prisma) =>
-        await prisma.prisma.User.findMany({
-          where: {
-            subscribedToUser: {
-              some: {
-                subscriberId: user.id,
-              },
-            },
-          },
-        }),
+      resolve: async (user: { id: string; userSubscribedTo: unknown[] }, b, context) => {
+        const result = await context.loaders.userLoader.loadMany(
+          user.userSubscribedTo.map((subs: any) => subs.authorId),
+        );
+        return result.flat();
+      },
     },
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-      resolve: async (user: { id: string }, b, prisma) =>
-        await prisma.prisma.User.findMany({
-          where: {
-            userSubscribedTo: {
-              some: {
-                authorId: user.id,
-              },
-            },
-          },
-        }),
+      resolve: async (user: { id: string; subscribedToUser: unknown[] }, b, context) => {
+        const subscriptions = user.subscribedToUser.map((subs: any) => subs.subscriberId);
+        const result = (await context.loaders.userLoader.loadMany(
+          subscriptions.length > 0 ? subscriptions : [],
+        )) as unknown[][];
+        return result.flat();
+      },
     },
   }),
 });
