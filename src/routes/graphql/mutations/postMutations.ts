@@ -7,7 +7,7 @@ export const createPost = {
   args: {
     dto: { type: new GraphQLNonNull(CreatePostInput) },
   },
-  resolve: async (a, { dto }, context) => context.Post.create({ data: dto }),
+  resolve: async (a, { dto }, { prisma }) => prisma.Post.create({ data: dto }),
 };
 export const changePost = {
   type: new GraphQLNonNull(PostType),
@@ -15,14 +15,14 @@ export const changePost = {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangePostInput) },
   },
-  resolve: async (a, { id, dto }, context) =>
-    context.Post.update({ where: { id: id }, data: dto }),
+  resolve: async (a, { id, dto }, { prisma }) =>
+    prisma.Post.update({ where: { id: id }, data: dto }),
 };
 export const deletePost = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, context) =>
-    (await context.Post.delete({ where: { id: id } })).toString(),
+  resolve: async (a, { id }, { prisma }) =>
+    (await prisma.Post.delete({ where: { id: id } })).toString(),
 };

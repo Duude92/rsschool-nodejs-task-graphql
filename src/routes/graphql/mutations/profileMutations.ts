@@ -11,7 +11,7 @@ export const createProfile = {
   args: {
     dto: { type: new GraphQLNonNull(CreateProfileInput) },
   },
-  resolve: async (a, { dto }, context) => context.Profile.create({ data: dto }),
+  resolve: async (a, { dto }, { prisma }) => prisma.Profile.create({ data: dto }),
 };
 export const changeProfile = {
   type: new GraphQLNonNull(ProfileType),
@@ -19,8 +19,8 @@ export const changeProfile = {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeProfileInput) },
   },
-  resolve: async (a, { id, dto }, context) =>
-    context.Profile.update({
+  resolve: async (a, { id, dto }, { prisma }) =>
+    prisma.Profile.update({
       where: {
         id: id,
       },
@@ -32,5 +32,6 @@ export const deleteProfile = {
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, context) => (await context.Profile.delete({ where: { id: id } })).toString(),
+  resolve: async (a, { id }, { prisma }) =>
+    (await prisma.Profile.delete({ where: { id: id } })).toString(),
 };

@@ -8,7 +8,7 @@ export const createUser = {
   args: {
     dto: { type: new GraphQLNonNull(CreateUserInput) },
   },
-  resolve: async (a, { dto }, context) => await context.User.create({ data: dto }),
+  resolve: async (a, { dto }, { prisma }) => await prisma.User.create({ data: dto }),
 };
 export const changeUser = {
   type: new GraphQLNonNull(UserType),
@@ -16,8 +16,8 @@ export const changeUser = {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeUserInput) },
   },
-  resolve: async (a, { id, dto }, context) =>
-    await context.User.update({
+  resolve: async (a, { id, dto }, { prisma }) =>
+    await prisma.User.update({
       where: { id: id },
       data: dto,
     }),
@@ -27,8 +27,8 @@ export const deleteUser = {
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, context) => {
-    const result = await context.User.delete({ where: { id: id } });
+  resolve: async (a, { id }, { prisma }) => {
+    const result = await prisma.User.delete({ where: { id: id } });
     return id;
   },
 };
@@ -38,14 +38,14 @@ export const subscribeTo = {
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { userId, authorId }, context) => {
-    const user = await context.User.findUnique({
+  resolve: async (a, { userId, authorId }, { prisma }) => {
+    const user = await prisma.User.findUnique({
       where: { id: userId },
     });
-    const author = await context.User.findUnique({
+    const author = await prisma.User.findUnique({
       where: { id: authorId },
     });
-    await context.SubscribersOnAuthors.create({
+    await prisma.SubscribersOnAuthors.create({
       data: {
         subscriberId: user.id,
         authorId: author.id,
@@ -60,8 +60,8 @@ export const unsubscribeFrom = {
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { userId, authorId }, context) => {
-    await context.SubscribersOnAuthors.delete({
+  resolve: async (a, { userId, authorId }, { prisma }) => {
+    await prisma.SubscribersOnAuthors.delete({
       where: {
         subscriberId_authorId: {
           subscriberId: userId,
