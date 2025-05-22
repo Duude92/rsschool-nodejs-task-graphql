@@ -5,9 +5,11 @@ import { rootSchema } from './gql-schema.js';
 import depthLimit from 'graphql-depth-limit';
 import DataLoader from 'dataloader';
 
-const createLoader = (values: unknown[], predicate: (value, key) => boolean) =>
+const createLoader = (values: Promise<unknown[]>, predicate: (value, key) => boolean) =>
   new DataLoader(async (keys) =>
-    keys.map((key: unknown) => values.filter((value) => predicate(value, key))),
+    keys.map(async (key: unknown) =>
+      (await values).filter((value) => predicate(value, key)),
+    ),
   );
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -28,11 +30,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       if (errors.length) return { errors };
 
       const postLoader = createLoader(
-        await prisma.post.findMany(),
+        prisma.post.findMany(),
         (post: any, key) => post.authorId === key,
       );
       const profileLoader = createLoader(
-        await prisma.profile.findMany({
+        prisma.profile.findMany({
           include: {
             memberType: true,
           },
@@ -40,15 +42,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         (profile: any, key) => profile.userId == key,
       );
       const memberLoader = createLoader(
-        await prisma.memberType.findMany(),
+        prisma.memberType.findMany(),
         (member: any, key) => member.id === key,
       );
       const userLoader = createLoader(
-        await prisma.user.findMany({
+        prisma.user.findMany({
           include: {
-            profile: true,
-            userSubscribedTo: true,
-            subscribedToUser: true,
+            // profile: true,
+            // userSubscribedTo: true,
+            // subscribedToUser: true,
           },
         }),
         (member: any, key) => member.id === key,
@@ -62,7 +64,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           prisma,
           loaders: { postLoader, profileLoader, memberLoader, userLoader },
         },
-        // validationRules: [depthLimit(5)],
       });
     },
   });
