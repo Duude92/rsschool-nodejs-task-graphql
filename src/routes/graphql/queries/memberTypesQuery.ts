@@ -3,7 +3,7 @@ import { MemberType, MemberTypeId } from '../types/memberType.js';
 
 export const memberTypesQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MemberType))),
-  resolve: async (_, __, prisma) => await prisma.MemberType.findMany(),
+  resolve: async (_, __, context) => await context.prisma.MemberType.findMany(),
 };
 export const memberTypeIdQuery = {
   type: MemberType,
@@ -13,8 +13,8 @@ export const memberTypeIdQuery = {
       description: 'MemberType identifier',
     },
   },
-  resolve: async (_, { id }: { id: typeof MemberTypeId }, prisma) =>
-    await prisma.MemberType.findUnique({
+  resolve: async (_, { id }: { id: typeof MemberTypeId }, context) =>
+    await context.prisma.MemberType.findUnique({
       where: {
         id: id,
       },

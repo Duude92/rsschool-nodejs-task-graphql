@@ -4,7 +4,7 @@ import { UUIDType } from '../types/uuid.js';
 
 export const postsQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-  resolve: async (_, __, context) => await context.Post.findMany(),
+  resolve: async (_, __, context) => await context.prisma.Post.findMany(),
 };
 export const postQuery = {
   type: PostType,
@@ -14,7 +14,7 @@ export const postQuery = {
     },
   },
   resolve: async (_, { id }: { id: typeof UUIDType }, context) =>
-    await context.Post.findUnique({
+    await context.prisma.Post.findUnique({
       where: {
         id: id,
       },

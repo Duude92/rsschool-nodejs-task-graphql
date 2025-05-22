@@ -5,8 +5,8 @@ import { UUIDType } from '../types/uuid.js';
 
 export const profileQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ProfileType))),
-  resolve: async (_, __, prisma) =>
-    await prisma.Profile.findMany({
+  resolve: async (_, __, context) =>
+    await context.prisma.Profile.findMany({
       include: {
         memberType: true,
       },
@@ -19,6 +19,6 @@ export const profileIdQuery = {
       type: new GraphQLNonNull(UUIDType),
     },
   },
-  resolve: async (_, { id }: { id: UUID }, prisma) =>
-    await prisma.Profile.findUnique({ where: { id: id }, include: { memberType: true } }),
+  resolve: async (_, { id }: { id: UUID }, context) =>
+    await context.prisma.Profile.findUnique({ where: { id: id }, include: { memberType: true } }),
 };
