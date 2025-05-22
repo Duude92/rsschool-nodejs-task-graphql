@@ -12,6 +12,9 @@ export const usersQuery = {
         profile: true,
       },
     });
+    result.forEach((user) => {
+      context.loaders.userLoader.prime(user.id, new Promise(resolve => resolve(user)));
+    })
     return result;
   },
 };
