@@ -4,7 +4,6 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLResolveInfo,
   GraphQLString,
 } from 'graphql/type/index.js';
 import { UUIDType } from './uuid.js';
@@ -12,6 +11,7 @@ import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
 import { IUserType } from '../api/IObjectTypes.js';
+import { UserResolver } from '../api/Types.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
@@ -61,9 +61,9 @@ export const UserType = new GraphQLObjectType({
     },
     profile: {
       type: ProfileType,
-      resolve: async (user: { id: typeof UUIDType }, b, context) =>
-        (await context.loaders.profileLoader.load(user.id)).pop(),
-    },
+      resolve: async (user, b, context)  =>
+        (await context.loaders.profileLoader.load(user.id)).pop()
+    } as UserResolver,
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
       resolve: async (user: { id: typeof UUIDType }, b, context) => {
@@ -74,7 +74,7 @@ export const UserType = new GraphQLObjectType({
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: IUserType, _, context, info) => {
-        const subscriptions = user.userSubscribedTo.map((subs: any) => subs.authorId);
+        const subscriptions = user.userSubscribedTo!.map((subs: any) => subs.authorId);
         const result: IUserType[] = await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         );
@@ -90,7 +90,7 @@ export const UserType = new GraphQLObjectType({
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: IUserType, b, context, info) => {
-        const subscriptions = user.subscribedToUser.map((subs: any) => subs.subscriberId);
+        const subscriptions = user.subscribedToUser!.map((subs: any) => subs.subscriberId);
         const result: IUserType[] = await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         );

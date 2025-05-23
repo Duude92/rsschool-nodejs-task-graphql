@@ -4,14 +4,25 @@ import { graphql, parse, validate } from 'graphql';
 import { rootSchema } from './gql-schema.js';
 import depthLimit from 'graphql-depth-limit';
 import DataLoader from 'dataloader';
+import {
+  Context,
+  MemberLoaderType,
+  PostLoaderType,
+  ProfileLoaderType,
+  UserLoaderType,
+} from './api/Types.js';
+import { IMemberType, IPost, IProfile, IUserType } from './api/IObjectTypes.js';
 
-const createLoader = (valuePromises: Promise<unknown[]>, predicate: (value, key) => boolean) =>
-  new DataLoader(async (keys) =>{
-    const values = await (valuePromises);
+const createLoader = <T>(
+  valuePromises: Promise<T[]>,
+  predicate: (value: T, key: string) => boolean,
+) =>
+  new DataLoader(async (keys) => {
+    const values = await valuePromises;
     return keys.map(async (key: unknown) =>
-      values.filter((value) => predicate(value, key)),
-    )}
-  );
+      values.filter((value) => predicate(value, key as string)),
+    );
+  });
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
@@ -30,31 +41,25 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const errors = validate(rootSchema, parse(query), [depthLimit(5)]);
       if (errors.length) return { errors };
 
-      const postLoader = createLoader(
+      const postLoader: PostLoaderType = createLoader<IPost>(
         prisma.post.findMany(),
-        (post: any, key) => post.authorId === key,
+        (post, key) => post.authorId === key,
       );
-      const profileLoader = createLoader(
+      const profileLoader: ProfileLoaderType = createLoader<IProfile>(
         prisma.profile.findMany({
           include: {
             memberType: true,
           },
         }),
-        (profile: any, key) => profile.userId == key,
+        (profile, key) => profile.userId == key,
       );
-      const memberLoader = createLoader(
+      const memberLoader: MemberLoaderType = createLoader<IMemberType>(
         prisma.memberType.findMany(),
-        (member: any, key) => member.id === key,
+        (member, key) => member.id === key,
       );
-      const userLoader = createLoader(
-        prisma.user.findMany({
-          include: {
-            // profile: true,
-            // userSubscribedTo: true,
-            // subscribedToUser: true,
-          },
-        }),
-        (member: any, key) => member.id === key,
+      const userLoader: UserLoaderType = createLoader<IUserType>(
+        prisma.user.findMany(),
+        (member, key) => member.id === key,
       );
 
       return graphql({
@@ -64,7 +69,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         contextValue: {
           prisma,
           loaders: { postLoader, profileLoader, memberLoader, userLoader },
-        },
+        } as Context,
       });
     },
   });
