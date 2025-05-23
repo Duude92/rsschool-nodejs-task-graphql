@@ -23,7 +23,7 @@ export const profileIdQuery = {
   resolve: async (_, { id }: { id: UUID }, context, info) => {
     const fields = extractFields(info, ProfileType);
 
-    await context.prisma.Profile.findUnique({
+    return await context.prisma.Profile.findUnique({
       where: { id: id },
       include: { memberType: !!fields.memberType },
     });
