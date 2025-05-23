@@ -29,7 +29,7 @@ export const extractFields = (info: GraphQLResolveInfo) => {
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
   const requiredKeys = Object.keys(fields);
-  const notFoundKey = objectKeys.find((oKey) => !requiredKeys.includes(oKey));
+  const notFoundKey = requiredKeys.find((oKey) => !objectKeys.includes(oKey));
   return { requiredKeys, notFoundKey };
 }
 
