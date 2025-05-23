@@ -1,21 +1,6 @@
 import { GraphQLList, GraphQLNonNull, GraphQLResolveInfo } from 'graphql/type/index.js';
-import { UserType } from '../types/userType.js';
+import { UserType, extractFields } from '../types/userType.js';
 import { UUIDType } from '../types/uuid.js';
-import {
-  parseResolveInfo,
-  ResolveTree,
-  simplifyParsedResolveInfoFragmentWithType,
-} from 'graphql-parse-resolve-info';
-
-function extractFields(info: GraphQLResolveInfo) {
-  const parsedResolveInfoFragment = parseResolveInfo(info);
-  const { fields }: { fields: Record<string, string> } =
-    simplifyParsedResolveInfoFragmentWithType(
-      parsedResolveInfoFragment as ResolveTree,
-      UserType,
-    );
-  return fields;
-}
 
 export const usersQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
