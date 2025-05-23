@@ -1,11 +1,12 @@
 import { GraphQLList, GraphQLNonNull, GraphQLResolveInfo } from 'graphql/type/index.js';
-import { UserType, extractFields } from '../types/userType.js';
+import { IUserType, UserType } from '../types/userType.js';
 import { UUIDType } from '../types/uuid.js';
+import { extractFields } from '../api/extractFields.js';
 
 export const usersQuery = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
   resolve: async (_, __, context, info: GraphQLResolveInfo) => {
-    const fields = extractFields(info);
+    const fields = extractFields(info, UserType);
     const result = await context.prisma.User.findMany({
       include: {
         userSubscribedTo: !!fields.userSubscribedTo,
@@ -32,7 +33,7 @@ export const userQuery = {
     context,
     info: GraphQLResolveInfo,
   ) => {
-    const fields = extractFields(info);
+    const fields = extractFields(info, UserType);
     return await context.prisma.User.findUnique({
       where: { id: id },
       include: {

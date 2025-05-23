@@ -10,21 +10,7 @@ import {
 import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
-import {
-  parseResolveInfo,
-  ResolveTree,
-  simplifyParsedResolveInfoFragmentWithType,
-} from 'graphql-parse-resolve-info';
-
-export const extractFields = (info: GraphQLResolveInfo) => {
-  const parsedResolveInfoFragment = parseResolveInfo(info);
-  const { fields }: { fields: Record<string, string> } =
-    simplifyParsedResolveInfoFragmentWithType(
-      parsedResolveInfoFragment as ResolveTree,
-      UserType,
-    );
-  return fields;
-};
+import { extractFields } from '../api/extractFields.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
@@ -47,7 +33,7 @@ async function reloadDataWithSelectedFields(
   context,
   user: IUserType,
 ) {
-  const fields = extractFields(info);
+  const fields = extractFields(info, UserType);
   const flatResult = result.flat();
   for (const resultUser of flatResult) {
     const { requiredKeys, notFoundKey } = findUnavailableKey(resultUser, fields);
