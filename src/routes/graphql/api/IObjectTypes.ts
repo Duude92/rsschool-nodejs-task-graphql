@@ -2,10 +2,10 @@ export interface IUserType {
   id: string;
   name: string;
   balance: number;
-  profile: IProfile;
-  posts: unknown[];
-  userSubscribedTo: IUserType[];
-  subscribedToUser: IUserType[];
+  profile?: IProfile;
+  posts?: unknown[];
+  userSubscribedTo?: IUserType[];
+  subscribedToUser?: IUserType[];
 }
 
 export interface IProfile {
@@ -13,21 +13,23 @@ export interface IProfile {
   isMale: boolean;
   yearOfBirth: number;
   memberType: IMemberType;
+  userId: string;
 }
 
 export interface IMemberType {
-  id: MemberTypeId;
+  id: string; // MemberTypeId
   discount: number;
   postsLimitPerMonth: number;
 }
 
 export enum MemberTypeId {
-  BASIC,
-  BUSINESS,
+  BASIC = 'BASIC',
+  BUSINESS = 'BUSINESS',
 }
 
 export interface IPost {
   id: string;
   title: string;
   content: string;
+  authorId: string;
 }
