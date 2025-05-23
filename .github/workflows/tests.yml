@@ -39,5 +39,11 @@ jobs:
       - name: Setup .env
         run: cp ".env.example" ".env"
 
+      - name: Apply pending migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed db
+        run: npx prisma db seed
+
       - name: Run test ${{ matrix.test-command.name }}
         run: ${{ matrix.test-command.command }}
