@@ -11,7 +11,7 @@ import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
-import { IUserType } from '../api/IUserType.js';
+import { IUserType } from '../api/IObjectTypes.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
