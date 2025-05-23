@@ -11,7 +11,6 @@ import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
 import { IUserType } from '../api/IObjectTypes.js';
-import { UserResolver } from '../api/Types.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
@@ -21,7 +20,7 @@ function findUnavailableKey(resultUser: IUserType, fields: Record<string, string
 }
 
 async function requestUserWithKeys(context, user: IUserType, requiredKeys: string[]) {
-  const newResult = (await context.prisma.User.findUnique({
+  const newResult = (await context.prisma.user.findUnique({
     where: { id: user.id },
     select: Object.fromEntries(requiredKeys.map((key) => [key, true])),
   })) as IUserType;
@@ -63,7 +62,7 @@ export const UserType = new GraphQLObjectType({
       type: ProfileType,
       resolve: async (user, b, context)  =>
         (await context.loaders.profileLoader.load(user.id)).pop()
-    } as UserResolver,
+    },
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
       resolve: async (user: { id: typeof UUIDType }, b, context) => {
