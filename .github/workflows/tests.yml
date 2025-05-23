@@ -12,7 +12,8 @@ jobs:
       matrix:
         node-version: [ 22.x ]
         test-command:
-          - name: integrity
+          - test-name: integrity
+            name: integrity
             command: node integrity.cjs
           - name: queries
             command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-queries.test.js"
