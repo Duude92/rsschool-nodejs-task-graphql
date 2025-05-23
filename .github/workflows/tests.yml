@@ -35,5 +35,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup .env
+        run: cp ".env.example" ".env"
+
       - name: Run test ${{ matrix.test-command.name }}
         run: ${{ matrix.test-command.command }}
