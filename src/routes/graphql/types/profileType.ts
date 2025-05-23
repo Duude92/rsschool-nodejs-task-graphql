@@ -17,7 +17,7 @@ export const ProfileType = new GraphQLObjectType({
     memberType: {
       type: new GraphQLNonNull(MemberType),
       resolve: async (parent, _, context) =>
-        await context.loaders.memberLoader.load(parent.memberTypeId),
+        (await context.loaders.memberLoader.load(parent.memberTypeId))[0],
     },
   },
 });

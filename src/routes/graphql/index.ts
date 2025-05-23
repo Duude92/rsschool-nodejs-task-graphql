@@ -5,11 +5,12 @@ import { rootSchema } from './gql-schema.js';
 import depthLimit from 'graphql-depth-limit';
 import DataLoader from 'dataloader';
 
-const createLoader = (values: Promise<unknown[]>, predicate: (value, key) => boolean) =>
-  new DataLoader(async (keys) =>
-    keys.map(async (key: unknown) =>
-      (await values).filter((value) => predicate(value, key)),
-    ),
+const createLoader = (valuePromises: Promise<unknown[]>, predicate: (value, key) => boolean) =>
+  new DataLoader(async (keys) =>{
+    const values = await (valuePromises);
+    return keys.map(async (key: unknown) =>
+      values.filter((value) => predicate(value, key)),
+    )}
   );
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
