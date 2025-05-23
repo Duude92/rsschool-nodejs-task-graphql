@@ -1,5 +1,5 @@
 import { GraphQLList, GraphQLNonNull, GraphQLResolveInfo } from 'graphql/type/index.js';
-import { IUserType, UserType } from '../types/userType.js';
+import {  UserType } from '../types/userType.js';
 import { UUIDType } from '../types/uuid.js';
 import { extractFields } from '../api/extractFields.js';
 

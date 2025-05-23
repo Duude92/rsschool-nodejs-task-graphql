@@ -11,6 +11,7 @@ import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
+import { IUserType } from '../api/IUserType.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
@@ -118,13 +119,3 @@ export const ChangeUserInput = new GraphQLInputObjectType({
     balance: { type: GraphQLFloat },
   },
 });
-
-export interface IUserType {
-  id: string;
-  name: string;
-  balance: number;
-  profile: unknown;
-  posts: unknown[];
-  userSubscribedTo: IUserType[];
-  subscribedToUser: IUserType[];
-}
