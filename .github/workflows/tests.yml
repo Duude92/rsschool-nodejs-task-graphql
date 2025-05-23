@@ -12,20 +12,20 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [ 22.x ]
         test-command:
           - name: integrity
             command: node integrity.cjs
           - name: queries
-            command: npm run build:ts && tap --timeout=0 "test/routes/gql-queries.test.js"
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-queries.test.js"
           - name: mutations
-            command: npm run build:ts && tap --timeout=0 "test/routes/gql-mutations.test.js"
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-mutations.test.js"
           - name: 5-layer rule
-            command: npm run build:ts && tap --timeout=0 "test/routes/gql-rule.test.js"
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-rule.test.js"
           - name: loader
-            command: npm run build:ts && tap --timeout=0 "test/routes/gql-loader.test.js"
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-loader.test.js"
           - name: loader-prime
-            command: npm run build:ts && tap --timeout=0 "test/routes/gql-loader-prime.test.js"
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-loader-prime.test.js"
 
     steps:
       - uses: actions/checkout@v4
