@@ -11,7 +11,7 @@ import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
-import { IPost, IProfile, ISubscriber, IUserType } from '../api/IObjectTypes.js';
+import { IPost, IProfile, IUserType } from '../api/IObjectTypes.js';
 import { Context, FieldBase } from '../api/Types.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
@@ -26,11 +26,10 @@ async function requestUserWithKeys(
   user: IUserType,
   requiredKeys: string[],
 ) {
-  const newResult = (await context.prisma.user.findUnique({
+  return (await context.prisma.user.findUnique({
     where: { id: user.id },
     select: Object.fromEntries(requiredKeys.map((key) => [key, true])),
   })) as unknown as IUserType;
-  return newResult;
 }
 
 async function reloadDataWithSelectedFields(
@@ -71,8 +70,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
       resolve: async (user, b, context) => {
-        const result = await context.loaders.postLoader.load(user.id);
-        return result;
+        return await context.loaders.postLoader.load(user.id);
       },
     } as FieldBase<IUserType, IPost[]>,
     userSubscribedTo: {
@@ -82,8 +80,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
         const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         )) as unknown as IUserType[];
-        const flatResult = await reloadDataWithSelectedFields(info, result, context);
-        return flatResult;
+        return await reloadDataWithSelectedFields(info, result, context);
       },
     } as FieldBase<IUserType, IUserType[]>,
     subscribedToUser: {
@@ -93,8 +90,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
         const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         )) as unknown as IUserType[];
-        const flatResult = await reloadDataWithSelectedFields(info, result, context);
-        return flatResult;
+        return await reloadDataWithSelectedFields(info, result, context);
       },
     } as FieldBase<IUserType, IUserType[]>,
   }),
