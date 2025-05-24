@@ -7,6 +7,8 @@ import {
 } from 'graphql/type/index.js';
 import { UUIDType } from './uuid.js';
 import { MemberType, MemberTypeId } from './memberType.js';
+import { IProfile } from '../api/IObjectTypes.js';
+import { FieldBase } from '../api/Types.js';
 
 export const ProfileType = new GraphQLObjectType({
   name: 'ProfileType',
@@ -18,7 +20,7 @@ export const ProfileType = new GraphQLObjectType({
       type: new GraphQLNonNull(MemberType),
       resolve: async (parent, _, context) =>
         (await context.loaders.memberLoader.load(parent.memberTypeId))[0],
-    },
+    } as FieldBase<IProfile, unknown>,
   },
 });
 export const CreateProfileInput = new GraphQLInputObjectType({

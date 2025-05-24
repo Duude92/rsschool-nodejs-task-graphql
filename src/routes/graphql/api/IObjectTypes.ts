@@ -18,14 +18,9 @@ export interface IProfile {
 }
 
 export interface IMemberType {
-  id: string; // MemberTypeId
+  id: string;
   discount: number;
   postsLimitPerMonth: number;
-}
-
-export enum MemberTypeId {
-  BASIC = 'BASIC',
-  BUSINESS = 'BUSINESS',
 }
 
 export interface IPost {

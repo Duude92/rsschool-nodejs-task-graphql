@@ -13,7 +13,7 @@ export const createUser: FieldBase<
   args: {
     dto: { type: new GraphQLNonNull(CreateUserInput) },
   },
-  resolve: async (a, { dto }, { prisma }) => await prisma.user.create({ data: dto }),
+  resolve: async (_, { dto }, { prisma }) => await prisma.user.create({ data: dto }),
 };
 export const changeUser: FieldBase<
   unknown,
@@ -25,7 +25,7 @@ export const changeUser: FieldBase<
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeUserInput) },
   },
-  resolve: async (a, { id, dto }, { prisma }) =>
+  resolve: async (_, { id, dto }, { prisma }) =>
     await prisma.user.update({
       where: { id: id },
       data: dto,
@@ -36,7 +36,7 @@ export const deleteUser: FieldBase<unknown, string, { id: string }> = {
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, { prisma }) => {
+  resolve: async (_, { id }, { prisma }) => {
     const result = await prisma.user.delete({ where: { id: id } });
     return result ? id : 'Error';
   },
@@ -51,7 +51,7 @@ export const subscribeTo: FieldBase<
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { userId, authorId }, { prisma }) => {
+  resolve: async (_, { userId, authorId }, { prisma }) => {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -77,7 +77,7 @@ export const unsubscribeFrom: FieldBase<
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { userId, authorId }, { prisma }) => {
+  resolve: async (_, { userId, authorId }, { prisma }) => {
     await prisma.subscribersOnAuthors.delete({
       where: {
         subscriberId_authorId: {

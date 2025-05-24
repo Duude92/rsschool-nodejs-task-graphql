@@ -21,7 +21,7 @@ export const createProfile: FieldBase<
   args: {
     dto: { type: new GraphQLNonNull(CreateProfileInput) },
   },
-  resolve: async (a, { dto }, { prisma }) => prisma.profile.create({ data: dto }),
+  resolve: async (_, { dto }, { prisma }) => prisma.profile.create({ data: dto }),
 };
 export const changeProfile: FieldBase<
   unknown,
@@ -36,7 +36,7 @@ export const changeProfile: FieldBase<
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeProfileInput) },
   },
-  resolve: async (a, { id, dto }, { prisma }) =>
+  resolve: async (_, { id, dto }, { prisma }) =>
     prisma.profile.update({
       where: {
         id: id,
