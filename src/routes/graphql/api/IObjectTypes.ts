@@ -4,8 +4,8 @@ export interface IUserType {
   balance: number;
   profile?: IProfile;
   posts?: unknown[];
-  userSubscribedTo?: IUserType[];
-  subscribedToUser?: IUserType[];
+  userSubscribedTo?: ISubscriber[];
+  subscribedToUser?: ISubscriber[];
 }
 
 export interface IProfile {
@@ -32,4 +32,10 @@ export interface IPost {
   title: string;
   content: string;
   authorId: string;
+}
+export interface ISubscriber{
+    authorId:string;
+    author?:IUserType;
+    subscriberId:string;
+    subscriber:IUserType;
 }

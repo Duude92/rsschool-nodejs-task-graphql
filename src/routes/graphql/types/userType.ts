@@ -11,7 +11,7 @@ import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
-import { IPost, IProfile, IUserType } from '../api/IObjectTypes.js';
+import { IPost, IProfile, ISubscriber, IUserType } from '../api/IObjectTypes.js';
 import { Context, FieldBase } from '../api/Types.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
@@ -51,9 +51,9 @@ async function reloadDataWithSelectedFields(
   return flatResult;
 }
 
-export const UserType = new GraphQLObjectType({
+export const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: 'UserType',
-  fields: (): any => ({
+  fields: () => ({
     id: {
       type: new GraphQLNonNull(UUIDType),
     },
@@ -78,7 +78,7 @@ export const UserType = new GraphQLObjectType({
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: IUserType, _, context, info) => {
-        const subscriptions = user.userSubscribedTo!.map((subs: any) => subs.authorId);
+        const subscriptions = user.userSubscribedTo!.map((subs) => subs.authorId);
         const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         )) as unknown as IUserType[];
@@ -89,9 +89,7 @@ export const UserType = new GraphQLObjectType({
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user, b, context, info) => {
-        const subscriptions = user.subscribedToUser!.map(
-          (subs: any) => subs.subscriberId,
-        );
+        const subscriptions = user.subscribedToUser!.map((subs) => subs.subscriberId);
         const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
         )) as unknown as IUserType[];
