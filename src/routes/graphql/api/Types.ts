@@ -23,7 +23,7 @@ export type Context = {
     userLoader: UserLoaderType;
   };
 };
-export type PostLoaderType = DataLoader<unknown, Promise<IPost[]>, unknown>;
-export type ProfileLoaderType = DataLoader<unknown, Promise<IProfile[]>, unknown>;
-export type MemberLoaderType = DataLoader<unknown, Promise<IMemberType[]>, unknown>;
-export type UserLoaderType = DataLoader<unknown, Promise<IUserType[]>, unknown>;
+export type PostLoaderType = DataLoader<string, Promise<IPost[]>>;
+export type ProfileLoaderType = DataLoader<string, Promise<IProfile[]>>;
+export type MemberLoaderType = DataLoader<string, Promise<IMemberType[]>>;
+export type UserLoaderType = DataLoader<string, Promise<IUserType[]>>;

@@ -64,12 +64,12 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     },
     profile: {
       type: ProfileType,
-      resolve: async (user, b, context) =>
+      resolve: async (user, _, context) =>
         (await context.loaders.profileLoader.load(user.id)).pop(),
     } as FieldBase<IUserType, IProfile>,
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-      resolve: async (user, b, context) => {
+      resolve: async (user, _, context) => {
         return await context.loaders.postLoader.load(user.id);
       },
     } as FieldBase<IUserType, IPost[]>,
@@ -85,7 +85,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     } as FieldBase<IUserType, IUserType[]>,
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-      resolve: async (user, b, context, info) => {
+      resolve: async (user, _, context, info) => {
         const subscriptions = user.subscribedToUser!.map((subs) => subs.subscriberId);
         const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
