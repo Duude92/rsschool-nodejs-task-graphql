@@ -1,0 +1,51 @@
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-22.04
+
+    name: test - ${{ matrix.test-command.name}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ 22.x ]
+        test-command:
+          - name: integrity
+            command: node integrity.cjs
+          - name: queries
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-queries.test.js"
+          - name: mutations
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-mutations.test.js"
+          - name: 5-layer rule
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-rule.test.js"
+          - name: loader
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-loader.test.js"
+          - name: loader-prime
+            command: npm run build:ts && npx tap --timeout=0 "test/routes/gql-loader-prime.test.js"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup .env
+        run: cp ".env.example" ".env"
+
+      - name: Apply pending migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed db
+        run: npx prisma db seed
+
+      - name: Run test ${{ matrix.test-command.name }}
+        run: ${{ matrix.test-command.command }}
