@@ -5,33 +5,50 @@ import {
 } from '../types/profileType.js';
 import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { UUIDType } from '../types/uuid.js';
+import { FieldBase } from '../api/Types.js';
+import {
+  IChangeProfileInput,
+  ICreateProfileInput,
+  IProfile,
+} from '../api/IObjectTypes.js';
 
-export const createProfile = {
+export const createProfile: FieldBase<
+  unknown,
+  Promise<IProfile>,
+  { dto: ICreateProfileInput }
+> = {
   type: new GraphQLNonNull(ProfileType),
   args: {
     dto: { type: new GraphQLNonNull(CreateProfileInput) },
   },
-  resolve: async (a, { dto }, { prisma }) => prisma.Profile.create({ data: dto }),
+  resolve: async (a, { dto }, { prisma }) => prisma.profile.create({ data: dto }),
 };
-export const changeProfile = {
+export const changeProfile: FieldBase<
+  unknown,
+  Promise<IProfile>,
+  {
+    id: string;
+    dto: IChangeProfileInput;
+  }
+> = {
   type: new GraphQLNonNull(ProfileType),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeProfileInput) },
   },
   resolve: async (a, { id, dto }, { prisma }) =>
-    prisma.Profile.update({
+    prisma.profile.update({
       where: {
         id: id,
       },
       data: dto,
     }),
 };
-export const deleteProfile = {
+export const deleteProfile: FieldBase<unknown, string, { id: string }> = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, { prisma }) =>
-    (await prisma.Profile.delete({ where: { id: id } })).toString(),
+  resolve: async (_, { id }, { prisma }) =>
+    JSON.stringify(await prisma.profile.delete({ where: { id: id } })),
 };

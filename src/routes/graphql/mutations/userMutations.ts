@@ -1,67 +1,84 @@
 import { ChangeUserInput, CreateUserInput, UserType } from '../types/userType.js';
 import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { UUIDType } from '../types/uuid.js';
-import { context } from 'tap';
+import { FieldBase } from '../api/Types.js';
+import { IChangeUserInput, ICreateUserInput, IUserType } from '../api/IObjectTypes.js';
 
-export const createUser = {
+export const createUser: FieldBase<
+  unknown,
+  Promise<IUserType>,
+  { dto: ICreateUserInput }
+> = {
   type: new GraphQLNonNull(UserType),
   args: {
     dto: { type: new GraphQLNonNull(CreateUserInput) },
   },
-  resolve: async (a, { dto }, { prisma }) => await prisma.User.create({ data: dto }),
+  resolve: async (a, { dto }, { prisma }) => await prisma.user.create({ data: dto }),
 };
-export const changeUser = {
+export const changeUser: FieldBase<
+  unknown,
+  Promise<IUserType>,
+  { id: string; dto: IChangeUserInput }
+> = {
   type: new GraphQLNonNull(UserType),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangeUserInput) },
   },
   resolve: async (a, { id, dto }, { prisma }) =>
-    await prisma.User.update({
+    await prisma.user.update({
       where: { id: id },
       data: dto,
     }),
 };
-export const deleteUser = {
+export const deleteUser: FieldBase<unknown, string, { id: string }> = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
   resolve: async (a, { id }, { prisma }) => {
-    const result = await prisma.User.delete({ where: { id: id } });
-    return id;
+    const result = await prisma.user.delete({ where: { id: id } });
+    return result ? id : 'Error';
   },
 };
-export const subscribeTo = {
+export const subscribeTo: FieldBase<
+  unknown,
+  string,
+  { userId: string; authorId: string }
+> = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
   resolve: async (a, { userId, authorId }, { prisma }) => {
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
-    const author = await prisma.User.findUnique({
+    const author = await prisma.user.findUnique({
       where: { id: authorId },
     });
-    await prisma.SubscribersOnAuthors.create({
+    await prisma.subscribersOnAuthors.create({
       data: {
-        subscriberId: user.id,
-        authorId: author.id,
+        subscriberId: user!.id,
+        authorId: author!.id,
       },
     });
-    return author.name;
+    return author!.name;
   },
 };
-export const unsubscribeFrom = {
+export const unsubscribeFrom: FieldBase<
+  unknown,
+  string,
+  { userId: string; authorId: string }
+> = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     userId: { type: new GraphQLNonNull(UUIDType) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
   },
   resolve: async (a, { userId, authorId }, { prisma }) => {
-    await prisma.SubscribersOnAuthors.delete({
+    await prisma.subscribersOnAuthors.delete({
       where: {
         subscriberId_authorId: {
           subscriberId: userId,

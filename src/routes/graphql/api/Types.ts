@@ -3,13 +3,13 @@ import { IMemberType, IPost, IProfile, IUserType } from './IObjectTypes.js';
 import { PrismaClient } from '@prisma/client';
 import DataLoader from 'dataloader';
 
-export type FieldBase<TSource, TResult> = Omit<
-  GraphQLFieldConfig<TSource, Context, Record<string, string>>,
+export type FieldBase<TSource, TResult, TArgs = Record<string, string>> = Omit<
+  GraphQLFieldConfig<TSource, Context, TArgs>,
   'resolve'
 > & {
   resolve: (
     source: TSource,
-    args: Record<string, string>,
+    args: TArgs,
     context: Context,
     info: GraphQLResolveInfo,
   ) => Promise<TResult> | TResult;

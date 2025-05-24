@@ -1,28 +1,35 @@
 import { GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
 import { ChangePostInput, CreatePostInput, PostType } from '../types/postType.js';
 import { UUIDType } from '../types/uuid.js';
+import { FieldBase } from '../api/Types.js';
+import { IChangePostInput, ICreatePostInput, IPost } from '../api/IObjectTypes.js';
 
-export const createPost = {
+export const createPost: FieldBase<unknown, IPost, { dto: ICreatePostInput }> = {
   type: new GraphQLNonNull(PostType),
   args: {
     dto: { type: new GraphQLNonNull(CreatePostInput) },
   },
-  resolve: async (a, { dto }, { prisma }) => prisma.Post.create({ data: dto }),
+  resolve: async (_, { dto }, { prisma }) =>
+    (await prisma.post.create({ data: dto })) as IPost,
 };
-export const changePost = {
+export const changePost: FieldBase<
+  unknown,
+  IPost,
+  { id: string; dto: IChangePostInput }
+> = {
   type: new GraphQLNonNull(PostType),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
     dto: { type: new GraphQLNonNull(ChangePostInput) },
   },
-  resolve: async (a, { id, dto }, { prisma }) =>
-    prisma.Post.update({ where: { id: id }, data: dto }),
+  resolve: async (_, { id, dto }, { prisma }) =>
+    await prisma.post.update({ where: { id: id }, data: dto }),
 };
-export const deletePost = {
+export const deletePost: FieldBase<unknown, string> = {
   type: new GraphQLNonNull(GraphQLString),
   args: {
     id: { type: new GraphQLNonNull(UUIDType) },
   },
-  resolve: async (a, { id }, { prisma }) =>
-    (await prisma.Post.delete({ where: { id: id } })).toString(),
+  resolve: async (_, { id }, { prisma }) =>
+    JSON.stringify(await prisma.post.delete({ where: { id: id } })),
 };
