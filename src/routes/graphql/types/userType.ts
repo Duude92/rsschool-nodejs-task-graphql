@@ -4,13 +4,15 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLResolveInfo,
   GraphQLString,
 } from 'graphql/type/index.js';
 import { UUIDType } from './uuid.js';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 import { extractFields } from '../api/extractFields.js';
-import { IUserType } from '../api/IObjectTypes.js';
+import { IPost, IProfile, IUserType } from '../api/IObjectTypes.js';
+import { Context, FieldBase } from '../api/Types.js';
 
 function findUnavailableKey(resultUser: IUserType, fields: Record<string, string>) {
   const objectKeys = Object.keys(resultUser);
@@ -19,19 +21,22 @@ function findUnavailableKey(resultUser: IUserType, fields: Record<string, string
   return { requiredKeys, notFoundKey };
 }
 
-async function requestUserWithKeys(context, user: IUserType, requiredKeys: string[]) {
+async function requestUserWithKeys(
+  context: Context,
+  user: IUserType,
+  requiredKeys: string[],
+) {
   const newResult = (await context.prisma.user.findUnique({
     where: { id: user.id },
     select: Object.fromEntries(requiredKeys.map((key) => [key, true])),
-  })) as IUserType;
+  })) as unknown as IUserType;
   return newResult;
 }
 
 async function reloadDataWithSelectedFields(
-  info,
+  info: GraphQLResolveInfo,
   result: IUserType[],
-  context,
-  user: IUserType,
+  context: Context,
 ) {
   const fields = extractFields(info, UserType);
   const flatResult = result.flat();
@@ -60,48 +65,40 @@ export const UserType = new GraphQLObjectType({
     },
     profile: {
       type: ProfileType,
-      resolve: async (user, b, context)  =>
-        (await context.loaders.profileLoader.load(user.id)).pop()
-    },
+      resolve: async (user, b, context) =>
+        (await context.loaders.profileLoader.load(user.id)).pop(),
+    } as FieldBase<IUserType, IProfile>,
     posts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-      resolve: async (user: { id: typeof UUIDType }, b, context) => {
+      resolve: async (user, b, context) => {
         const result = await context.loaders.postLoader.load(user.id);
         return result;
       },
-    },
+    } as FieldBase<IUserType, IPost[]>,
     userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: async (user: IUserType, _, context, info) => {
         const subscriptions = user.userSubscribedTo!.map((subs: any) => subs.authorId);
-        const result: IUserType[] = await context.loaders.userLoader.loadMany(
+        const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
-        );
-        const flatResult = await reloadDataWithSelectedFields(
-          info,
-          result,
-          context,
-          user,
-        );
+        )) as unknown as IUserType[];
+        const flatResult = await reloadDataWithSelectedFields(info, result, context);
         return flatResult;
       },
-    },
+    } as FieldBase<IUserType, IUserType[]>,
     subscribedToUser: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-      resolve: async (user: IUserType, b, context, info) => {
-        const subscriptions = user.subscribedToUser!.map((subs: any) => subs.subscriberId);
-        const result: IUserType[] = await context.loaders.userLoader.loadMany(
+      resolve: async (user, b, context, info) => {
+        const subscriptions = user.subscribedToUser!.map(
+          (subs: any) => subs.subscriberId,
+        );
+        const result = (await context.loaders.userLoader.loadMany(
           subscriptions.length > 0 ? subscriptions : [],
-        );
-        const flatResult = await reloadDataWithSelectedFields(
-          info,
-          result,
-          context,
-          user,
-        );
+        )) as unknown as IUserType[];
+        const flatResult = await reloadDataWithSelectedFields(info, result, context);
         return flatResult;
       },
-    },
+    } as FieldBase<IUserType, IUserType[]>,
   }),
 });
 export const CreateUserInput = new GraphQLInputObjectType({
