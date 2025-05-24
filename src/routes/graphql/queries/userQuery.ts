@@ -17,7 +17,7 @@ export const usersQuery: FieldBase<IUserType, IUserType[]> = {
           profile: !!fields.profile,
         },
       })
-    ).map((res) => res as unknown as IUserType);
+    ).map((res) => res as IUserType);
 
     result.forEach((user) => {
       context.loaders.userLoader.prime(
@@ -44,6 +44,6 @@ export const userQuery: FieldBase<IUserType, IUserType> = {
         subscribedToUser: !!fields.subscribedToUser,
         profile: !!fields.profile,
       },
-    })) as unknown as IUserType;
+    })) as IUserType;
   },
 };

@@ -1,11 +1,14 @@
-import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql/type/index.js';
+import { GraphQLList, GraphQLNonNull } from 'graphql/type/index.js';
 import { MemberType, MemberTypeId } from '../types/memberType.js';
+import { FieldBase } from '../api/Types.js';
+import { IMemberType } from '../api/IObjectTypes.js';
 
-export const memberTypesQuery = {
+export const memberTypesQuery: FieldBase<IMemberType, IMemberType[]> = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MemberType))),
-  resolve: async (_, __, context) => await context.prisma.MemberType.findMany(),
+  resolve: async (_, __, context) =>
+    (await context.prisma.memberType.findMany()) as IMemberType[],
 };
-export const memberTypeIdQuery = {
+export const memberTypeIdQuery: FieldBase<IMemberType, IMemberType> = {
   type: MemberType,
   args: {
     id: {
@@ -13,10 +16,10 @@ export const memberTypeIdQuery = {
       description: 'MemberType identifier',
     },
   },
-  resolve: async (_, { id }: { id: typeof MemberTypeId }, context) =>
-    await context.prisma.MemberType.findUnique({
+  resolve: async (_, { id }, context) =>
+    (await context.prisma.memberType.findUnique({
       where: {
         id: id,
       },
-    }),
+    })) as IMemberType,
 };

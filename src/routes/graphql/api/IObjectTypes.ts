@@ -3,7 +3,7 @@ export interface IUserType {
   name: string;
   balance: number;
   profile?: IProfile;
-  posts?: unknown[];
+  posts?: IPost[];
   userSubscribedTo?: ISubscriber[];
   subscribedToUser?: ISubscriber[];
 }
@@ -12,8 +12,9 @@ export interface IProfile {
   id: string;
   isMale: boolean;
   yearOfBirth: number;
-  memberType: IMemberType;
   userId: string;
+  memberType?: IMemberType;
+  memberTypeId: string;
 }
 
 export interface IMemberType {
@@ -33,9 +34,10 @@ export interface IPost {
   content: string;
   authorId: string;
 }
-export interface ISubscriber{
-    authorId:string;
-    author?:IUserType;
-    subscriberId:string;
-    subscriber:IUserType;
+
+export interface ISubscriber {
+  authorId: string;
+  author?: IUserType;
+  subscriberId: string;
+  subscriber: IUserType;
 }

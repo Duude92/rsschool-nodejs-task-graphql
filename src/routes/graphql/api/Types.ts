@@ -1,9 +1,21 @@
-import { GraphQLFieldConfig, GraphQLFieldResolver } from 'graphql/type/index.js';
+import { GraphQLFieldConfig, GraphQLResolveInfo } from 'graphql/type/index.js';
 import { IMemberType, IPost, IProfile, IUserType } from './IObjectTypes.js';
 import { PrismaClient } from '@prisma/client';
 import DataLoader from 'dataloader';
 
-export type FieldBase<TSource,TResult> = Omit<GraphQLFieldConfig<TSource, Context, Record<string, string>>,'resolve' > &  {resolve: GraphQLFieldResolver<TSource, Context, Record<string, string>, Promise<TResult>>};
+// export type FieldBase<TSource,TResult> = Omit<GraphQLFieldConfig<TSource, Context, Record<string, string>>,'resolve' > &  {resolve: GraphQLFieldResolver<TSource, Context, Record<string, string>, Promise<TResult>>};
+export type FieldBase<TSource, TResult> = Omit<
+  GraphQLFieldConfig<TSource, Context, Record<string, string>>,
+  'resolve'
+> & {
+  resolve: (
+    source: TSource,
+    args: Record<string, string>,
+    context: Context,
+    info: GraphQLResolveInfo,
+  ) => Promise<TResult> | TResult;
+};
+// export type FieldBase<TSource,TResult> = GraphQLFieldConfig<TSource, Context, Record<string, string>> &  {resolve: GraphQLFieldResolver<TSource, Context, Record<string, string>, Promise<TResult>>}
 export type Context = {
   prisma: PrismaClient;
   loaders: {
