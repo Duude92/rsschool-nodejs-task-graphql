@@ -3,7 +3,6 @@ import { IMemberType, IPost, IProfile, IUserType } from './IObjectTypes.js';
 import { PrismaClient } from '@prisma/client';
 import DataLoader from 'dataloader';
 
-// export type FieldBase<TSource,TResult> = Omit<GraphQLFieldConfig<TSource, Context, Record<string, string>>,'resolve' > &  {resolve: GraphQLFieldResolver<TSource, Context, Record<string, string>, Promise<TResult>>};
 export type FieldBase<TSource, TResult> = Omit<
   GraphQLFieldConfig<TSource, Context, Record<string, string>>,
   'resolve'
@@ -15,7 +14,6 @@ export type FieldBase<TSource, TResult> = Omit<
     info: GraphQLResolveInfo,
   ) => Promise<TResult> | TResult;
 };
-// export type FieldBase<TSource,TResult> = GraphQLFieldConfig<TSource, Context, Record<string, string>> &  {resolve: GraphQLFieldResolver<TSource, Context, Record<string, string>, Promise<TResult>>}
 export type Context = {
   prisma: PrismaClient;
   loaders: {
